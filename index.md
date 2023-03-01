@@ -83,25 +83,16 @@ When you create a new site, the `frappe` app is installed by default.
 
 To create DocTypes in our app, we must log in to Desk. Go to ` http://library.test:8000 ` and it should show you a login page.
 
-![login](./assets/login_page.png)
-
 Enter Administrator as the user and password that you set while creating the site.
 
-![successful_login](./assets/Successful_login.png)
+
+![Screenshot from 2023-03-01 17-47-03](https://user-images.githubusercontent.com/103517339/222136988-2aab243b-8ddc-4ba9-868d-20c7ed294bb1.png)
 
 After successful login, you will see the setup wizard. This is a one-time setup wizard used to set up the site. Go ahead, select your country and complete the wizard.
 
 You should see the Desk that looks something like this:
+![Screenshot from 2023-03-01 17-47-43](https://user-images.githubusercontent.com/103517339/222137160-4a850e87-117d-4576-91a0-85821d2b44c5.png)
 
-![desk](./assets/desk.png)
-
-Good job making it this far!
-
-## Site Commands
-
-` https://frappe.school/courses/frappe-framework-tutorial/learn/5.6 `
-
----
 
 ## Create a DocType
 
