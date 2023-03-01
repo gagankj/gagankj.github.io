@@ -14,9 +14,8 @@ This will start several processes including a Python web server based on Gunicor
 
 The web server will start listening on the port 8000 but we don't have any sites yet to serve. Our next step is to create our app and create a site that will have this app installed.
 
-Make sure not to close the terminal where bench start is running. To run bench commands, create another terminal and cd into the frappe-bench directory.
+Run new tab in terminal by clicking on the top left button.
 
-Good job on following the tutorial so far!
 
 ## Create app
 
@@ -26,17 +25,6 @@ To create our Library Management app, run the following command from the frappe-
 bench new-app library_management
 ```
 
-## App directory structure
-
-- library_management: This directory will contain all the source code for your app
-  - public: Store static files that will be served from Nginx in production
-  - templates: Jinja templates used to render web views
-  - www: Web pages that are served based on their directory path
-  - library_management: Default Module bootstrapped with app
-  - modules.txt: List of modules defined in the app
-  - patches.txt: Patch entries for database migrations
-  - hooks.py: Hooks used to extend or intercept standard functionality provided by the framework
-- requirements.txt: List of Python packages that will be installed when you install this app
 
 ## Create a new site
 
@@ -74,7 +62,7 @@ bench --site library.test add-to-hosts
 
 This will ask for your root password and will add an entry to your /etc/hosts file.
 
-Great, now you can access your site at ` http://library.test:8000 `. Congratulations for making it this far.
+Now you can access your site at ` http://library.test:8000 `. 
 
 ## Install App on Site
 
