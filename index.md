@@ -45,20 +45,16 @@ This command will create a new database, so you need to enter your MySQL root pa
 
 Now, you will have a new folder named library.test in the sites directory.
 
-## Site Directory Structure
-
-As you can see, the `private` folder will contain any database backups and private files. Private files are user uploaded files that need authentication to be accessible.
-
-The `public` folder will contain files that are accessible without authentication. This can contain website images that should be accessible without login.
-
-The `site_config.json` file contains configuration that is specific to this site which should not be version controlled. This is similar to an environment variables file. If you look at the contents of the file, it contains the database configuration values for this site.
-
 ## Access Sites in you browser
 
-Frappe will identify which site to serve by matching the hostname of the request with the site name, so you should be able to access your site on ` http://library.test:8000 ` but this won't work because we have to tell our operating system that library.test should point to localhost. To do that, you can add the following entry to your /etc/hosts file.
+Now, that we have created our first site, we can access it on http://localhost:8000 in our browser.
+
+However, bench allows you to create multiple sites and access them separately in the browser on the same port. This is what we call multi-tenancy support in bench.
+
+To achieve that, we must disable the serving of the default site. Go back to your terminal and delete the file sites/currentsite.txt from the frappe-bench directory.
 
 ```bash
-127.0.0.1 library.test
+rm sites/currentsite.txt
 ```
 
 This will map library.test to localhost. Bench has a convenient command to do just that.
@@ -77,14 +73,13 @@ To install our Library Management app on our site, run the following command:
 
 ```bash
 $ bench --site library.test install-app library_management
-
-Installing library_management...
-Updating Dashboard for library_management
 ```
 
+To confirm if the app was installed, run the following command:.
+    bench --site library.test list-apps
+    
 You should see `frappe` and `library_management` as installed apps on your site.
 
-When you create a new site, the `frappe` app is installed by default.
 
 ## Login into desk
 
@@ -103,26 +98,23 @@ You should see the Desk that looks something like this:
 
 ## Enable Developer Mode
 
-DocType is analogous to a Model in other frameworks. Apart from defining properties, it also defines the behavior of the Model.
-
-Before we can create DocTypes, we need to enable developer mode. This will enable boilerplate creation when we create doctypes and we can track them into version control with our app.
-
 Go to your terminal and from the frappe-bench directory, run the following command:
 
 ```bash
-bench --site library.test set-config --global developer_mode 1
+bench set-config -g developer_mode true
+bench start
 ```
 
 ## Creating a DocType
 
-While in Desk, type 'doctype' in the search bar and select the **DocType List** option. You will be navigated to the DocType list where you will see a bunch of DocTypes. These are the DocTypes that are bundled with the framework.
+While in Desk, navigate to the DocType List using the Awesomebar. This list will include DocTypes bundled with the framework, those that are a part of the installed Frappe apps and custom ones, which you can create specific to each site.
 
 The first doctype we will create is **Article**. To create it, click on New.
 
 - Enter Name as Article
 - Select Library Management in Module
 - Add the following fields in the Fields table:
-  - Article Name (Data)
+  - Article Name (Data,Mandatory)
   - Image (Attach Image)
   - Author (Data)
   - Description (Text Editor)
@@ -130,9 +122,26 @@ The first doctype we will create is **Article**. To create it, click on New.
   - Status (Select) - Enter two options: Issued and Available (Type Issued, hit enter, then type Available)
   - Publisher (Data)
 
-  After adding the fields, click on Save.
 
-  <!-- ![first_doctyoe](./assets/first_doctype.webm) -->
+![image](https://user-images.githubusercontent.com/103517339/223105137-93f19b9d-96f4-40be-b0ab-63668eb043bd.png)
+
+
+![image](https://user-images.githubusercontent.com/103517339/223105267-6ffc2244-05de-4fc2-af11-67237bffbc8e.png)
+
+Edit the Status Field. Refer to this image:
+![image](https://user-images.githubusercontent.com/103517339/223105467-a0f1bf27-c3ca-4875-819a-715019a71e0b.png)
+
+
+  After adding the fields, click on Save.
+  You will see a Go to Article List button at the top right of the form. Click on it to go to the Article List. Here you will see a blank list with no records because the table has no records.
+
+Let's create some records. But before that, we need to clear the Desk cache. Click on the Settings dropdown on the right side of the navbar and click on Reload.
+
+Now, you should see the New button. Click on it and you will see the Form view of the Article doctype. Fill in the form and click on Save. You have created your first Article document. Go back to the list view and you should see one record.
+
+![image](https://user-images.githubusercontent.com/103517339/223105906-2025080d-b830-4742-a8da-215fc20c856a.png)
+
+
   
   You will see a Go to Article List button at the top right of the form. Click on it to go to the Article List. Here you will see a blank list with no records because the table has no records.
 
@@ -140,83 +149,6 @@ Let's create some records. But before that, we need to clear the Desk cache. Cli
 
 Now, you should see the New button. Click on it and you will see the Form view of the Article doctype. Fill in the form and click on Save. You have created your first Article document. Go back to the list view and you should see one record.
 
-## What happened when you created the Article DocType?
-
-- ### Database Table
-
-A database table with the name `tabArticle` was created with the fields we specified in the fields table. You can confirm this by checking it from the MariaDB console
-
-```bash
-bench --site library.test mariadb
-
-WARNING: Forcing protocol to  TCP  due to option specification. Please explicitly state intended protocol.
-Welcome to the MariaDB monitor.  Commands end with ; or \g.
-Your MariaDB connection id is 433
-Server version: 10.6.12-MariaDB-0ubuntu0.22.04.1 Ubuntu 22.04
-
-Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
-
-Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
-
-MariaDB [_9321a152cb497eb3]> select * from tabArticle;
-+------------+----------------------------+----------------------------+---------------+---------------+-----------+-----+-----------------------------+-------+-------------+------------------------------------>
-| name       | creation                   | modified                   | modified_by   | owner         | docstatus | idx | article_name                | image | author      | description                        >
-+------------+----------------------------+----------------------------+---------------+---------------+-----------+-----+-----------------------------+-------+-------------+------------------------------------>
-| b0af436bcd | 2023-02-27 21:43:15.882797 | 2023-02-27 21:43:15.882797 | Administrator | Administrator |         0 |   0 | The Girl with all the gifts | NULL  | M.R. Marley | <div class="ql-editor read-mode"><p>
-+------------+----------------------------+----------------------------+---------------+---------------+-----------+-----+-----------------------------+-------+-------------+------------------------------------>
-1 row in set (0.001 sec)
-
-MariaDB [_9321a152cb497eb3]> desc tabArticle;
-+--------------+--------------+------+-----+---------+-------+
-| Field        | Type         | Null | Key | Default | Extra |
-+--------------+--------------+------+-----+---------+-------+
-| name         | varchar(140) | NO   | PRI | NULL    |       |
-| creation     | datetime(6)  | YES  |     | NULL    |       |
-| modified     | datetime(6)  | YES  | MUL | NULL    |       |
-| modified_by  | varchar(140) | YES  |     | NULL    |       |
-| owner        | varchar(140) | YES  |     | NULL    |       |
-| docstatus    | int(1)       | NO   |     | 0       |       |
-| idx          | int(8)       | NO   |     | 0       |       |
-| article_name | varchar(140) | YES  |     | NULL    |       |
-| image        | text         | YES  |     | NULL    |       |
-| author       | varchar(140) | YES  |     | NULL    |       |
-| description  | longtext     | YES  |     | NULL    |       |
-| isbn         | varchar(140) | YES  |     | NULL    |       |
-| status       | varchar(140) | YES  |     | NULL    |       |
-| publisher    | varchar(140) | YES  |     | NULL    |       |
-| _user_tags   | text         | YES  |     | NULL    |       |
-| _comments    | text         | YES  |     | NULL    |       |
-| _assign      | text         | YES  |     | NULL    |       |
-| _liked_by    | text         | YES  |     | NULL    |       |
-+--------------+--------------+------+-----+---------+-------+
-18 rows in set (0.001 sec)
-
-MariaDB [_9321a152cb497eb3]>
-```
-
-The fields we specified in Title Case were converted to snake case automatically, and are used as the column names in the table. For e.g., `article_name`, `image`, `author` , and `description`.
-
-However, many other fields were created like `name`, `creation`, `modified`, `modified_by` . These are standard fields created for all doctypes. `name` is the primary key column.
-
-If you created a record with the Form, you can also run a standard select query to get the rows.
-
-- ### Desk View
-
-There are a number of views that were also created for our DocType. The Article List is the list view that shows the records from the database table. The Form view is the view that is shown when you want to create a new document or view an existing one.
-
-- ### Form Layout
-
-If you notice, the layout of fields in the form is according to how you ordered them in the Fields table. For e.g., Article Name is the first field followed by Image which is followed by Author. In later parts of the tutorial we will learn how to customize this further.
-
-- ### Can't find  4. Boilerplate code
-
-` https://frappe.school/courses/frappe-framework-tutorial/learn/6.3 `
-
-I do find biolerplate code for library_member, library_membership docType which I created later on.
-
-Also later I realise that the custom option was enable that should be disabled for "Has web view" to work and when I save article doctype begin to show in doctype folder
-
----
 
 ## Doctype Features
 
@@ -227,37 +159,28 @@ Previously we created the Article doctype. Let's see what other features we can 
 If you created a document with the Form, you might have noticed that the `name` value of the document was a randomly generated hash. Let's make a change so that the Article Name we provide becomes the `name` of the document.
 
 To do that, open the doctype list from the search bar and click on Article. Now, scroll down to the Naming section and in the Auto Name field enter **field:article_name**. Click on Save.
+![image](https://user-images.githubusercontent.com/103517339/223106571-3a2fdafe-5a3a-4188-8161-2da47d498c60.png)
 
-Now, go back to the Article List and create a new article again.
 
-![naming](./assets/naming.png)
+Now, go back to the Article List and create a new article again(for example- catch22 is name of the article).
+![image](https://user-images.githubusercontent.com/103517339/223106941-656397ee-a31c-4b28-9915-4f0c3b65ec30.png)
 
 Now, the name of the document will be the Article Name and it must be unique across Articles. So you cannot create another article with the same name.
 
-You can also check the database records by running a select query in the mariadb console.
 
-```bash
-MariaDB [_9321a152cb497eb3]> select * from tabArticle;
-+-----------------------------+----------------------------+----------------------------+---------------+---------------+-----------+-----+-----------------------------+-------+-------------+------------------->
-| name                        | creation                   | modified                   | modified_by   | owner         | docstatus | idx | article_name                | image | author      | description       >
-+-----------------------------+----------------------------+----------------------------+---------------+---------------+-----------+-----+-----------------------------+-------+-------------+------------------->
-| b0af436bcd                  | 2023-02-27 21:43:15.882797 | 2023-02-27 21:43:15.882797 | Administrator | Administrator |         0 |   0 | The Girl with all the gifts | NULL  | M.R. Marley | <div class="ql-edi>
-| The man who want perfection | 2023-02-27 22:14:40.351230 | 2023-02-27 22:14:40.351230 | Administrator | Administrator |         0 |   0 | The man who want perfection | NULL  | M.R. Goldy  | <div class="ql-edi>
-+-----------------------------+----------------------------+----------------------------+---------------+---------------+-----------+-----+-----------------------------+-------+-------------+------------------->
-(END)
-```
 
 ## Form Layout
 
 Let's customize the layout of how the fields are laid out in the form while making good use of the available space. Go to the Article doctype, scroll to the Fields section, and add two new fields of type Column Break and Section Break. We will also hide the Image field as it is not needed to be shown in the form. Check out the GIF to see it in action.
 
-![form_layout](https://frappe.school/files/article-form-layout.gif)
+![image](https://user-images.githubusercontent.com/103517339/223107441-6b78451c-5968-4c39-8f85-04b37de51535.png)
+
 
 ## Form Settings
 
 Go to the Article doctype and scroll down to the Form Settings section. Enter image in the Image Field. This will show the image at the left top of the form. You can also enable Allow Rename to allow renaming of documents.
 
-![form_settings](https://frappe.school/files/article-form-settings.gif)
+![image](https://user-images.githubusercontent.com/103517339/223107613-cfaa50be-d2a0-4a52-93d0-150e60072859.png)
 
 ## Permissions
 
@@ -265,11 +188,10 @@ You can also configure what roles you want to allow and which actions you want t
 
 You can also configure the type of action that is allowed for a particular role. Let's add a Librarian role that has permission for all actions and a Library Member role that has permission for Read action.
 
-![permissions](https://frappe.school/files/article-permissions.gif)
+![image](https://user-images.githubusercontent.com/103517339/223107850-5659be74-7a2e-4826-bab5-109c6596319c.png)
 
 You can test this by creating a new User that has the Librarian role, and another User that has the Library Member role. Login with each user, and see what actions are allowed.
 
----
 
 ## Controller Methods
 
@@ -285,7 +207,7 @@ Let's create our second doctype: Library Member. It will have the following fiel
 - Email Address (Data)
 - Phone (Data)
 
-![library_member](https://frappe.school/files/TqEJOjO.gif)
+![image](https://user-images.githubusercontent.com/103517339/223108151-83259b80-2b3b-4dcc-93d4-a32175e5b289.png)
 
 After you have created the doctype, go to Library Member list, clear the cache from Settings > Reload and create a new Library Member.
 
@@ -301,12 +223,8 @@ class LibraryMember(Document):
     def before_save(self):
         self.full_name = f'{self.first_name} {self.last_name or ""}'
 ```
-
-We wrote the logic in the `before_save` method which runs every time a document is saved. This is one of the many hooks provided by the `Document` class. You can learn more about all the available hooks at [Controller](https://frappeframework.com/docs/v14/user/en/basics/doctypes/controllers) docs.
-
-Now, go back and create another Library Member and see the Full Name show up after save.
-
----
+If the above snippet doesn't work for you , make sure server side scripts are enabled, and then restart bench
+    bench --site <your_site> set-config server_script_enabled true
 
 ## Types of DocType
 
@@ -323,6 +241,8 @@ Let's create another doctype: **Library Membership**. It will have the following
 - Paid (Check)
 
 It will have Is Submittable enabled. It will have Naming set as LMS.##### and restricted to Librarian role. Also, the Title Field should be set to full_name in the View Settings section.
+![image](https://user-images.githubusercontent.com/103517339/223108454-e45167cd-d0f1-487e-a652-f81b3eccc52c.png)
+
 
 The Link field Library Member is similar to a Foreign Key column in other frameworks. It will let you link the value to a record in another DocType. In this case, it links to a record of Library Member DocType.
 
