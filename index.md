@@ -4,11 +4,9 @@
 
 ## Start bench server
 
+    cd frappe-bench/
+    bench start
 
-```bash
-cd frappe-bench/
-bench start
-```
 
 This will start several processes including a Python web server based on Gunicorn, redis servers for caching, job queuing and socketio pub-sub, background workers, node server for socketio and a node server for compiling JS/CSS files.
 
