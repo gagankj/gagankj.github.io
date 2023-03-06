@@ -703,3 +703,42 @@ Now, the articles list should look prettier. You can click on any article to vie
 
 ![article_list](./assets/article_list.png)
 
+Create a DocType
+DocType is analogous to a Model in other frameworks. Apart from defining properties, it also defines the behavior of the Model.
+
+Enable Developer Mode 
+Before we can create DocTypes, we need to enable developer mode on our bench. This will enable boilerplate creation when we create doctypes and we can track them into version control with our app.
+
+Go to your terminal and quit the bench server if it's already running then from the frappe-bench directory, run the following command:
+
+$ bench set-config -g developer_mode true
+$ bench start
+Creating a DocType 
+While in Desk, navigate to the DocType List using the Awesomebar. This list will include DocTypes bundled with the framework, those that are a part of the installed Frappe apps and custom ones, which you can create specific to each site.
+
+The first doctype we will create is Article. To create it, click on New.
+
+Enter Name as Article
+Select Library Management in Module
+Add the following fields in the Fields table:
+Article Name (Data, Mandatory)
+Image (Attach Image)
+Author (Data)
+Description (Text Editor)
+ISBN (Data)
+Status (Select) - Enter two options: Issued and Available (Type Issued, hit enter, then type Available)
+Publisher (Data)
+Refer the following GIF to check how it should be done:
+
+Article DocType
+
+After adding the fields, click on Save.
+
+You will see a Go to Article List button at the top right of the form. Click on it to go to the Article List. Here you will see a blank list with no records because the table has no records.
+
+Let's create some records. But before that, we need to clear the Desk cache. Click on the Settings dropdown on the right side of the navbar and click on Reload.
+
+Now, you should see the New button. Click on it and you will see the Form view of the Article doctype. Fill in the form and click on Save. You have created your first Article document. Go back to the list view and you should see one record.
+
+Article New Form
+
