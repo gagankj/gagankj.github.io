@@ -247,9 +247,20 @@ Let's create another doctype: **Library Membership**. It will have the following
 - Paid (Check)
 
 It will have Is Submittable enabled. It will have Naming set as LMS.##### and restricted to Librarian role. Also, the Title Field should be set to full_name in the View Settings section.
+
 ![image](https://user-images.githubusercontent.com/103517339/223108454-e45167cd-d0f1-487e-a652-f81b3eccc52c.png)
 
+Add fields
+
+![Screenshot from 2023-03-06 18-14-41](https://user-images.githubusercontent.com/103517339/223114039-63a9c13c-26ed-4068-8991-f941b83b35b0.png)
+
+
 ![Screenshot from 2023-03-06 18-11-48](https://user-images.githubusercontent.com/103517339/223113289-170c52d0-9432-416a-a302-51932c66e5ea.png)
+
+Permission Rules
+
+![Screenshot from 2023-03-06 18-16-01](https://user-images.githubusercontent.com/103517339/223114229-3699b4b1-dc72-428a-9d2c-5f7bebeca674.png)
+
 
 The Link field Library Member is similar to a Foreign Key column in other frameworks. It will let you link the value to a record in another DocType. In this case, it links to a record of Library Member DocType.
 
