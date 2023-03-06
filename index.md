@@ -254,6 +254,7 @@ Add fields
 
 ![Screenshot from 2023-03-06 18-14-41](https://user-images.githubusercontent.com/103517339/223114039-63a9c13c-26ed-4068-8991-f941b83b35b0.png)
 
+Edit Full Name 
 
 ![Screenshot from 2023-03-06 18-11-48](https://user-images.githubusercontent.com/103517339/223113289-170c52d0-9432-416a-a302-51932c66e5ea.png)
 
@@ -264,23 +265,17 @@ Permission Rules
 
 The Link field Library Member is similar to a Foreign Key column in other frameworks. It will let you link the value to a record in another DocType. In this case, it links to a record of Library Member DocType.
 
-```text
-!! DON'T FORGET TO SAVE THE doctype before setting up the following
-```
-
 The Full Name field is a Read Only field that will be automatically fetched from from the full_name field in the linked record Library Member.
 
-![ss](./assets/lm_ss.png)
+Now, go to the Library Membership list and create a new document. You will see that the Library Member field is a dropdown with existing records shown as options. 
 
-Now, go to the Library Membership list and create a new document. You will see that the Library Member field is a dropdown with existing records shown as options. Select a Library Member and the Full Name will be fetched automatically. Pretty cool, right?
+![Screenshot from 2023-03-06 18-19-54](https://user-images.githubusercontent.com/103517339/223115079-fb8586c3-b880-4018-9713-f8e8aebee3c7.png)
 
-## Linked DocTypes
+Select a Library Member and the Full Name will be fetched automatically. 
 
-Linked DocTypes are DocTypes that are linked in other doctypes as Link fields. All doctypes are linkable. We can classify doctypes broadly into Master and Transactional based on the type of data they store. Article, Library Member are examples of Master data because they represent an entity (physical or virtual). Library Membership is an example of doctype which stores transactional data.
+![Screenshot from 2023-03-06 18-20-27](https://user-images.githubusercontent.com/103517339/223115326-53066bd8-20b3-4d1a-9c9a-a735d151e0be.png)
 
-## Submittable DocTypes
 
-When you enable Is Submittable in a DocType is becomes a Submittable DocType. A Submittable doctype can have 3 states: Draft, Submitted and Cancelled. A document in the Draft state can be changed like any document, however once it is in Submitted state, the value of any field in the document cannot be changed. A Submitted document can be Cancelled, which makes the document invalid. If you notice, an extra field was added in our Library Membership doctype called Amended From. This field is used to keep track of amendments in documents. Once a document is Cancelled, it can only be amended, which means it can be duplicated and the cancelled document will be linked to the new amended document via the Amended From field.
 
 ## Controller Validation for Membership
 
@@ -317,7 +312,8 @@ We wrote our logic in the before_submit method which will run before we submit t
 
 Now, try creating a Library Membership with an overlapping period and you should see an error when you submit the document.
 
-![already_active_membership](./assets/already_active_membership.png)
+![Screenshot from 2023-03-06 18-22-49](https://user-images.githubusercontent.com/103517339/223115716-1882fe63-0fbc-49d3-83c9-a850505c2cf9.png)
+
 
 ## Library Transaction
 
@@ -332,7 +328,14 @@ This doctype will be called **Library Transaction** and will have the following 
 
 This doctype will also be a Submittable doctype.
 
-![LT-doctype](https://frappe.school/files/library-transaction-doctype.gif)
+![Screenshot from 2023-03-06 18-23-38](https://user-images.githubusercontent.com/103517339/223116133-7777f205-b482-4f7f-81cc-fe49e395aaa9.png)
+
+![Screenshot from 2023-03-06 18-23-54](https://user-images.githubusercontent.com/103517339/223116146-d6433305-4836-4ec5-9232-7ed8c1e0814c.png)
+
+![Screenshot from 2023-03-06 18-24-09](https://user-images.githubusercontent.com/103517339/223116157-99e0830c-d977-4c97-be00-7214e06ccbb2.png)
+
+![Screenshot from 2023-03-06 18-24-24](https://user-images.githubusercontent.com/103517339/223116172-5157484b-7bb8-41b7-a144-1aeeba78d246.png)
+
 
 ## Validation for Transaction
 
