@@ -405,13 +405,14 @@ Let's create the last doctype for our app: Library Settings. It will have the fo
 
 Since we don't need to have multiple records for these settings, we will enable Is Single for this doctype.
 
-![LS_doctype](./assets/Library-setting_doctype.png)
+![Screenshot from 2023-03-06 18-28-59](https://user-images.githubusercontent.com/103517339/223119265-ac53dc5c-7eca-46bf-a917-04d83fb8007d.png)
+
+
+![Screenshot from 2023-03-06 18-29-15](https://user-images.githubusercontent.com/103517339/223119276-045d278f-727e-4c9e-b08c-3dbc564b0faa.png)
+
 
 After creating the doctype, click on Go to Library Settings, to go to the form and set the values for Loan Period and Maximum Number of Issued Articles.
 
-## Single DocTypes
-
-When a DocType has Is Single enabled, it will become a Single DocType. A single doctype is similar to singleton records in other frameworks. It does not create a new database table. Instead all single values are stored in a single table called tabSingles. It is used usually for storing global settings.
 
 ## Validation for Library Settings
 
@@ -420,31 +421,28 @@ Let's make the change in Library Membership such that, the To Date automatically
 **library_membership.py**
 
 ```bash
-# Copyright (c) 2023, vipin and contributors
-# For license information, please see license.txt
-
 import frappe
 from frappe.model.document import Document
+from frappe.model.docstatus import DocStatus
 
 
 class LibraryMembership(Document):
-	# check before submitting this document
+    # check before submitting this document
     def before_submit(self):
         exists = frappe.db.exists(
-            'Library Membership',
+            "Library Membership",
             {
-                'library_member': self.library_member,
-                # check for submitted documents
-                'docstatus': 1,
+                "library_member": self.library_member,
+                "docstatus": DocStatus.submitted(),
                 # check if the membership's end date is later than this membership's start date
-                'to_date': ('>', self.from_date),
+                "to_date": (">", self.from_date),
             },
         )
         if exists:
-            frappe.throw('There is an active membership for this member')
+            frappe.throw("There is an active membership for this member")
 
         # get loan period and compute to_date by adding loan_period to from_date
-        loan_period = frappe.db.get_single_value('Library Settings', 'loan_period')
+        loan_period = frappe.db.get_single_value("Library Settings", "loan_period")
         self.to_date = frappe.utils.add_days(self.from_date, loan_period or 30)
 ```
 
@@ -455,74 +453,70 @@ Now, let's make the change in Library Transaction such that when an Article is I
 **library_transaction.py**
 
 ```bash
-# Copyright (c) 2023, vipin and contributors
-# For license information, please see license.txt
 
 import frappe
 from frappe.model.document import Document
+from frappe.model.docstatus import DocStatus
+
 
 class LibraryTransaction(Document):
     def before_submit(self):
-        if self.type == 'Issue':
+        if self.type == "Issue":
             self.validate_issue()
+            self.validate_maximum_limit()
             # set the article status to be Issued
-            article = frappe.get_doc('Article', self.article)
-            article.status = 'Issued'
+            article = frappe.get_doc("Article", self.article)
+            article.status = "Issued"
             article.save()
 
-        elif self.type == 'Return':
+        elif self.type == "Return":
             self.validate_return()
             # set the article status to be Available
-            article = frappe.get_doc('Article', self.article)
-            article.status = 'Available'
+            article = frappe.get_doc("Article", self.article)
+            article.status = "Available"
             article.save()
 
     def validate_issue(self):
         self.validate_membership()
-        article = frappe.get_doc('Article', self.article)
+        article = frappe.get_doc("Article", self.article)
         # article cannot be issued if it is already issued
-        if article.status == 'Issued':
-            frappe.throw('Article is already issued by another member')
+        if article.status == "Issued":
+            frappe.throw("Article is already issued by another member")
 
     def validate_return(self):
-        article = frappe.get_doc('Article', self.article)
+        article = frappe.get_doc("Article", self.article)
         # article cannot be returned if it is not issued first
-        if article.status == 'Available':
-            frappe.throw('Article cannot be returned without being issued first')
-
+        if article.status == "Available":
+            frappe.throw("Article cannot be returned without being issued first")
 
     def validate_maximum_limit(self):
-        max_articles = frappe.db.get_single_value('Library Settings', 'max_articles')
+        max_articles = frappe.db.get_single_value("Library Settings", "max_articles")
         count = frappe.db.count(
-            'Library Transaction',
-            {'library_member': self.library_member, 'type': 'Issue', 'docstatus': 1},
+            "Library Transaction",
+            {"library_member": self.library_member, "type": "Issue", "docstatus": DocStatus.submitted()},
         )
         if count >= max_articles:
-            frappe.throw('Maximum limit reached for issuing articles')
-
+            frappe.throw("Maximum limit reached for issuing articles")
 
     def validate_membership(self):
         # check if a valid membership exist for this library member
         valid_membership = frappe.db.exists(
-            'Library Membership',
+            "Library Membership",
             {
-                'library_member': self.library_member,
-                'docstatus': 1,
-                'from_date': ('<', self.date),
-                'to_date': ('>', self.date),
+                "library_member": self.library_member,
+                "docstatus": DocStatus.submitted(),
+                "from_date": ("<", self.date),
+                "to_date": (">", self.date),
             },
         )
         if not valid_membership:
-            frappe.throw('The member does not have a valid membership')
+            frappe.throw("The member does not have a valid membership")
 ```
 
 We added a validate_maximum_limit method and used frappe.db.count to count the number of transactions made by the member.
 
 With that, we have covered the basics of doctype creation and types of doctype. We also wrote business logic for various doctypes.
 
-Good job making it this far. Let's keep going.
-
----
 
 ## Form Scripts
 
@@ -553,26 +547,32 @@ frappe.ui.form.on('Library Member', {
 
 Now, refresh your page and go to the Library Member form. You should see two buttons on the top right. Click on them to try them out. They will automatically set the Library Member in each of those documents making the process easier.
 
-![form_script](./assets/form_script.png)
+![Screenshot from 2023-03-06 18-43-03](https://user-images.githubusercontent.com/103517339/223119953-32f5dfd4-bdf2-4d6a-9634-6d07358d33dc.png)
+
 
 We have only scratched the surface here. You can do a lot more with Form Scripts. Learn more about the API at [Form Scripts API](https://frappeframework.com/docs/v14/user/en/api/form).
 
 ---
 
-## Portal Pages
+## Web View Pages
 
-Portal pages are server rendered pages for your website visitors.
+Web View Pages are server rendered pages for your website visitors.
 
-We have been exclusively working with the Desk which is the admin interface accessible by System Users. Usually you will want to give limited access to your customers. In our case, we want Library Members to be able to view available Articles that they can issue from our website. Portal Pages can help us achieve that.
+We have been exclusively working with the Desk which is the admin interface accessible by System Users. Usually you will want to give limited access to your customers. In our case, we want Library Members to be able to view available Articles that they can issue from our website. Web View Pages can help us achieve that.
 
 Go to Article doctype, and scroll down to the Web View section.
 
-- Enable Has Web View and Allow Guest to View
-- Enter articles in the Route field
-- Add a field named Route in the fields table
-- Click on Save
+ 1.Enable Has Web View and Allow Guest to View
+ 2.Enter articles in the Route field
+ 3.Add fields named Route and Published in the fields table
+ 4.Click on Save
+ 
+The published field will help filter out those documents which are not supposed to be shown in web view, otherwise you will run into an error.
 
-![portal_page](https://frappe.school/files/article-web-view.gif)
+![image](https://user-images.githubusercontent.com/103517339/223120269-a477fe3e-5b24-4855-865b-46d2a76442ab.png)
+
+![image](https://user-images.githubusercontent.com/103517339/223120309-491999ff-30ec-4329-af5a-bc30fd07d6ad.png)
+
 
 We have now enabled web views for Article doctype. This means you can now view details of an Article on your website without logging into Desk. Let's test this out by creating a new Article. You should see See on Website at the top left of your form. Click on it to view the web view of the Article.
 
@@ -584,7 +584,6 @@ The default web view that is generated is pretty barebones and serves only as a 
 
 Let's edit `article.html` first. Frappe uses Bootstrap 4 by default for it's web views. So, you can use any valid Bootstrap 4 markup to style your pages. Add the following HTML to `article.html`.
 
-{% raw %}
 
 ```bash
 {%  extends 'templates/web.html' %}
@@ -614,17 +613,15 @@ Let's edit `article.html` first. Frappe uses Bootstrap 4 by default for it's web
 {% endblock %}
 ```
 
-{% endraw %}
-
 Now, go to any Article and click on See on Website. If you have filled in all fields of your Article, you should see a page like this:
 
-![article_web_view](./assets/article_web_view.png)
+![Screenshot from 2023-03-06 18-46-11](https://user-images.githubusercontent.com/103517339/223120597-e1a043de-e1c0-4cf4-bb8b-7b11addf7eaf.png)
+
 
 Now, open http://library.test:8000/articles. This should show the list of articles, but it is also pretty barebones. Let's customize the HTML.
 
 Edit the article_row.html and add the following HTML:
 
-{% raw %}
 
 ```bash
 <div class='py-8 row'>
@@ -638,48 +635,6 @@ Edit the article_row.html and add the following HTML:
 </div>
 ```
 
-{% endraw %}
-
 Now, the articles list should look prettier. You can click on any article to view it's details.
 
-![article_list](./assets/article_list.png)
-
-Create a DocType
-DocType is analogous to a Model in other frameworks. Apart from defining properties, it also defines the behavior of the Model.
-
-Enable Developer Mode 
-Before we can create DocTypes, we need to enable developer mode on our bench. This will enable boilerplate creation when we create doctypes and we can track them into version control with our app.
-
-Go to your terminal and quit the bench server if it's already running then from the frappe-bench directory, run the following command:
-
-$ bench set-config -g developer_mode true
-$ bench start
-Creating a DocType 
-While in Desk, navigate to the DocType List using the Awesomebar. This list will include DocTypes bundled with the framework, those that are a part of the installed Frappe apps and custom ones, which you can create specific to each site.
-
-The first doctype we will create is Article. To create it, click on New.
-
-Enter Name as Article
-Select Library Management in Module
-Add the following fields in the Fields table:
-Article Name (Data, Mandatory)
-Image (Attach Image)
-Author (Data)
-Description (Text Editor)
-ISBN (Data)
-Status (Select) - Enter two options: Issued and Available (Type Issued, hit enter, then type Available)
-Publisher (Data)
-Refer the following GIF to check how it should be done:
-
-Article DocType
-
-After adding the fields, click on Save.
-
-You will see a Go to Article List button at the top right of the form. Click on it to go to the Article List. Here you will see a blank list with no records because the table has no records.
-
-Let's create some records. But before that, we need to clear the Desk cache. Click on the Settings dropdown on the right side of the navbar and click on Reload.
-
-Now, you should see the New button. Click on it and you will see the Form view of the Article doctype. Fill in the form and click on Save. You have created your first Article document. Go back to the list view and you should see one record.
-
-Article New Form
-
+![Screenshot from 2023-03-06 18-47-10](https://user-images.githubusercontent.com/103517339/223120823-939e5e74-ed60-4fc2-98a5-39a127c50198.png)
