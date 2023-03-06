@@ -24,11 +24,17 @@ To create our Library Management app, run the following command from the frappe-
     bench new-app library_management
 
 App Title (default: Library Management):
+
 App Description: Library Management System
+
 App Publisher: Faris Ansari
+
 App Email: faris@example.com
+
 App Icon (default 'octicon octicon-file-directory'):
+
 App Color (default 'grey'):
+
 App License (default 'MIT'):
 
 You will be prompted with details of your app, fill them up and an app named library_management will be created in the apps folder.
