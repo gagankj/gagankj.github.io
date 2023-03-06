@@ -576,7 +576,6 @@ The published field will help filter out those documents which are not supposed 
 
 We have now enabled web views for Article doctype. This means you can now view details of an Article on your website without logging into Desk. Let's test this out by creating a new Article. You should see See on Website at the top left of your form. Click on it to view the web view of the Article.
 
-![web_view_preview](https://frappe.school/files/article-web-page.gif)
 
 ## Customize Web View Template
 
