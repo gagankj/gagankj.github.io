@@ -581,32 +581,57 @@ The default web view that is generated is pretty barebones and serves only as a 
 
 Let's edit `article.html` first. Frappe uses Bootstrap 4 by default for it's web views. So, you can use any valid Bootstrap 4 markup to style your pages. Add the following HTML to `article.html`.
 
-
-```bash
-
-<div class='py-20 row'>
-    <div class='col-sm-2'>
-        <img alt='{{ title }}' src='{{ image }}'>
-    </div>
-    <div class='col'>
-        <h1>{{ title }}</h1>
-        <p class='lead'>By {{ author }}</p>
-        <div>
-            {%- if status == 'Available' -%}
-            <span class='badge badge-success'>Available</span>
-            {%- elif status == 'Issued' -%}
-            <span class='badge badge-primary'>Issued</span>
-            {%- endif -%}
-        </div>
-        <div class='mt-4'>
-            <div>Publisher: <strong>{{ publisher }}</strong></div>
-            <div>ISBN: <strong>{{ isbn }}</strong></div>
-        </div>
-        <p>{{ description }}</p>
-    </div>
-</div>
-{% endblock %}
 ```
+{%  extends "templates/web.html" %}
+
+{% block page_content %}
+
+<div class="py-20 row">
+
+    <div class="col-sm-2">
+
+        <img alt="{{ title }}" src="{{ image }}">
+
+    </div>
+
+    <div class="col">
+
+        <h1>{{ title }}</h1>
+
+        <p class="lead">By {{ author }}</p>
+
+        <div>
+
+            {%- if status == 'Available' -%}
+
+            <span class="badge badge-success">Available</span>
+            {%- elif status == 'Issued' -%}
+
+            <span class="badge badge-primary">Issued</span>
+
+            {%- endif -%}
+
+        </div>
+
+        <div class="mt-4">
+
+            <div>Publisher: <strong>{{ publisher }}</strong></div>
+
+            <div>ISBN: <strong>{{ isbn }}</strong></div>
+
+        </div>
+
+        <p>{{ description }}</p>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+```
+
+
 
 Now, go to any Article and click on See on Website. If you have filled in all fields of your Article, you should see a page like this:
 
