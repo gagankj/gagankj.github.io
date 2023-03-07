@@ -583,9 +583,7 @@ Let's edit `article.html` first. Frappe uses Bootstrap 4 by default for it's web
 
 
 ```bash
-{%  extends 'templates/web.html' %}
 
-{% block page_content %}
 <div class='py-20 row'>
     <div class='col-sm-2'>
         <img alt='{{ title }}' src='{{ image }}'>
