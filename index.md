@@ -344,8 +344,6 @@ When an Article is issued, we should verify whether the Library Member has an ac
 **library_transaction.py**
 
 ```bash
-# Copyright (c) 2023, vipin and contributors
-# For license information, please see license.txt
 
 import frappe
 from frappe.model.document import Document
