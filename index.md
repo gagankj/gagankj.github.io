@@ -603,7 +603,7 @@ Let's edit `article.html` first. Frappe uses Bootstrap 4 by default for it's web
             {%- if status == 'Available' -%}
 
             <span class="badge badge-success">Available</span>
-            {%- elif status == 'Issued' -%}
+            {%-  status == 'Issued' -%}
 
             <span class="badge badge-primary">Issued</span>
 
