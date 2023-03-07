@@ -625,7 +625,6 @@ Let's edit `article.html` first. Frappe uses Bootstrap 4 by default for it's web
 
 </div>
 
-{% endblock %}
 
 ```
 
