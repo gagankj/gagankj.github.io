@@ -582,9 +582,7 @@ The default web view that is generated is pretty barebones and serves only as a 
 Let's edit `article.html` first. Frappe uses Bootstrap 4 by default for it's web views. So, you can use any valid Bootstrap 4 markup to style your pages. Add the following HTML to `article.html`.
 
 ```
-{%  extends "templates/web.html" %}
 
-{% block page_content %}
 
 <div class="py-20 row">
 
