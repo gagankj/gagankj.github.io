@@ -636,4 +636,4 @@ Edit the article_row.html and add the following HTML:
 
 Now, the articles list should look prettier. You can click on any article to view it's details.
 
-![Screenshot from 2023-03-06 18-47-10](https://user-images.githubusercontent.com/103517339/223120823-939e5e74-ed60-4fc2-98a5-39a127c50198.png)
+![Screenshot from 2023-03-07 18-02-36](https://user-images.githubusercontent.com/103517339/223423191-2e8f7958-eb1d-42f6-9c18-82646d31e8a4.png)
